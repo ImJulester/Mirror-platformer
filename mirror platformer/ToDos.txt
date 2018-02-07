@@ -1,0 +1,31 @@
+Thing to do 
+
+Unity map editor: 
+
+START SCREEN : 
+playerprefs int RecentMaps;
+Playerprefs strings for recent used maps: 
+map.load(playerprefs.getstring(map[i]));
+preview of map : 
+Create a sprite/texture from map file for preview? 
+
+
+file new (Create a new empty map with a set width/height)
+File Open (load map info first then the map data)
+File save (same directory if "File opened" or saved this session, else do Save as) 
+File saveAs(always select directory and set current opened file to saved file) 
+
+Tools? 
+
+Bucket tool
+Pipet/color picker (rechtsklik misschien??? ) 
+brush(is default nu)
+Select & copy / paste (mouse pos = topleft of the selection and you paste it at the mouse pos u click)
+Erease ? (wat is niks tho? ) 
+
+Shortcuts voor tools
+bucket = G/F??
+Brush = B
+Selecteren = S/A?
+Ereaser = E
+
