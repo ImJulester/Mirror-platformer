@@ -6,7 +6,10 @@ using UnityEditor;
 
 public class Grid : MonoBehaviour {
 
-    bool firstMap;
+    bool openMap;
+
+    bool firstMap = true;
+
     public static Grid grid = null;
     public GameObject tile;
     public List<GameObject> allTiles;
@@ -18,6 +21,9 @@ public class Grid : MonoBehaviour {
     private string currentSavePath;
     private string currentSavePathinfo;
     private Vector2 startpos;
+
+    public GameObject saveChanges;
+    public GameObject createNewMap;
     // Use this for initialization
 
     void Awake()
@@ -31,36 +37,36 @@ public class Grid : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-    void Start() {
+    void Start()
+    {
 
         startpos = new Vector2(((-width * 32) / 8) * 3, (height * 32) / 2);
-
-        CreateMap(width, height);
-        // SaveToFile.save.SaveMap(map, width, height);
-
-
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
 
     }
+
+    #region mapMethods
 
     public void ChangeTile(int xpos, int ypos, int value)
     {
         map[xpos, ypos] = value;
     }
 
-    public void Save()
+
+    public void CleanMap()
     {
-        SaveMap(map, width, height,false);
-    }
-    public void SaveAs()
-    {
-        SaveMap(map, width, height, true);
+        foreach (GameObject g in allTiles)
+        {
+            Destroy(g);
+        }
+        allTiles.Clear();
     }
 
-    public void OpenMap()
+    void OpenMap()
     {
         currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
         //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
@@ -68,15 +74,19 @@ public class Grid : MonoBehaviour {
         maptext = File.ReadAllText(currentSavePath);
         if (currentSavePath != null && maptext != null)
         {
-            foreach (GameObject g in allTiles)
-            {
-                Destroy(g);
-            }
-            allTiles.Clear();
+            CleanMap();
+
             string[] mapInfo = File.ReadAllLines(currentSavePath.Replace(".map", "i.map"));
             int.TryParse(mapInfo[0], out width);
             int.TryParse(mapInfo[1], out height);
             map = new int[width, height];
+
+            Camera.main.orthographicSize = height * 20;
+            Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
+            Camera.main.gameObject.GetComponent<CameraMovement>().Ybound = height * 18;
+
+
+
             char[] separators = { ',', ';', ';','\n'};
             string[] values = maptext.Split(separators);
             int count = 0;
@@ -94,6 +104,11 @@ public class Grid : MonoBehaviour {
                     block.GetComponent<Block>().ypos = y;
 
                     count++;
+
+                    if (y == height / 2 && x == width / 2)
+                    {
+                        Camera.main.gameObject.GetComponent<Transform>().position = new Vector3(block.GetComponent<Transform>().position.x, block.GetComponent<Transform>().position.y, -10);
+                    }
                 }
             }
 
@@ -106,18 +121,14 @@ public class Grid : MonoBehaviour {
     {
         if (allTiles.Count > 0)
         {
-            foreach (GameObject g in allTiles)
-            {
-                Destroy(g);
-            }
-            allTiles.Clear();
+            CleanMap();
         }
 
         width = w;
         height = h;
         map = new int[width, height];
         Camera.main.orthographicSize = height * 20;
-        Camera.main.gameObject.GetComponent<Transform>().position += new Vector3(((width * 32) / 8) * 3, 0, 0);
+        //Camera.main.gameObject.GetComponent<Transform>().position += new Vector3(((width * 32) / 8) * 3, 0, 0);
         Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
         Camera.main.gameObject.GetComponent<CameraMovement>().Ybound = height * 18;
         for (int x = 0; x < width; x++)
@@ -132,11 +143,16 @@ public class Grid : MonoBehaviour {
                 map[x, y] = 5;
                 block.GetComponent<Block>().xpos = x;
                 block.GetComponent<Block>().ypos = y;
+
+                if (y == height / 2 && x == width / 2)
+                {
+                    Camera.main.gameObject.GetComponent<Transform>().position = new Vector3(block.GetComponent<Transform>().position.x, block.GetComponent<Transform>().position.y, -10);
+                }
             }
         }
     }
 
-        void SaveMap(int[,] map, int width, int height, bool saveAs)
+    void SaveMap(int[,] map, int width, int height, bool saveAs)
     {
         SpriteManager.instance.madeChanges = false;
         string[] mapinfo = new string[2];
@@ -179,10 +195,109 @@ public class Grid : MonoBehaviour {
             currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
         }
+        Debug.Log(currentSavePathinfo + " before");
+        if (currentSavePath == null || currentSavePathinfo == null)
+        {
+            currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
+            currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
+        }
+        Debug.Log(currentSavePathinfo + " after");
         if (currentSavePath != null)
         {
             File.WriteAllLines(currentSavePath, lines);
             File.WriteAllLines(currentSavePathinfo, mapinfo);
         }
     }
+    #endregion
+
+    #region Buttons
+
+    public void ButtonOpenMap()
+    {
+        openMap = true;
+
+        if (firstMap)
+        {
+            firstMap = false;
+            OpenMap();
+            return;
+        }
+
+        if (!SpriteManager.instance.madeChanges)
+        {
+            OpenMap();
+        }
+        else
+        {
+            saveChanges.SetActive(true);
+        }
+    }
+
+    public void NewMap()
+    {
+        openMap = false;
+
+        if (firstMap)
+        {
+            firstMap = false;
+            createNewMap.SetActive(true);
+            return;
+        }
+        if (!SpriteManager.instance.madeChanges)
+        {
+            createNewMap.SetActive(true);
+        }
+        else
+        {
+            saveChanges.SetActive(true);
+        }
+    }
+
+    public void CancelNewMap()
+    {
+        saveChanges.SetActive(false);
+    }
+
+    public void DontSave()
+    {
+        CleanMap();
+        saveChanges.SetActive(false);
+        if (openMap)
+        {
+            OpenMap();
+        }
+        else
+        {
+            createNewMap.SetActive(true);
+            currentSavePath = null;
+        }
+
+
+    }
+
+    public void SaveChanges()
+    {
+        SaveMap(map, width, height, false);
+        saveChanges.SetActive(false);
+        if (openMap)
+        {
+            OpenMap();
+        }
+        else
+        {
+            createNewMap.SetActive(true);
+            currentSavePath = null;
+        }
+    }
+
+    public void Save()
+    {
+        SaveMap(map, width, height, false);
+    }
+
+    public void SaveAs()
+    {
+        SaveMap(map, width, height, true);
+    }
+    #endregion
 }

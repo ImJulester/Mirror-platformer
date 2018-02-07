@@ -19,5 +19,6 @@ public class NewMap : MonoBehaviour {
     public void CreateNewMap()
     {
         grid.CreateMap(int.Parse(width.text), int.Parse(height.text));
+        gameObject.SetActive(false);
     }
 }
