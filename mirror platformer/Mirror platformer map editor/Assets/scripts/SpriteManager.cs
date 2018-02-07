@@ -10,6 +10,8 @@ public class SpriteManager : MonoBehaviour {
 
     public Sprite[] tiles;
 
+    public bool madeChanges;
+
     void Awake()
     {
         if (instance == null)
@@ -38,9 +40,13 @@ public class SpriteManager : MonoBehaviour {
 
                 if (hit.collider != null)
                 {
-                    hit.collider.GetComponent<Block>().id = selectedID;
-                    hit.collider.GetComponent<Block>().ChangeTile();
-                    Debug.Log(hit.collider.GetComponent<Transform>().position);
+                    if (hit.collider.GetComponent<Block>().id != selectedID)
+                    {
+                        madeChanges = true;
+                        hit.collider.GetComponent<Block>().id = selectedID;
+                        hit.collider.GetComponent<Block>().ChangeTile();
+                    }
+
                 }
             }
         }

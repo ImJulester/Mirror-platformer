@@ -5,6 +5,8 @@ using System.IO;
 using UnityEditor;
 
 public class Grid : MonoBehaviour {
+
+    bool firstMap;
     public static Grid grid = null;
     public GameObject tile;
     public List<GameObject> allTiles;
@@ -12,7 +14,6 @@ public class Grid : MonoBehaviour {
     public int height;
 
     public int[,] map;
-
 
     private string currentSavePath;
     private string currentSavePathinfo;
@@ -34,25 +35,7 @@ public class Grid : MonoBehaviour {
 
         startpos = new Vector2(((-width * 32) / 8) * 3, (height * 32) / 2);
 
-        map = new int[width, height];
-        Camera.main.orthographicSize = height * 20;
-        Camera.main.gameObject.GetComponent<Transform>().position += new Vector3(((width * 32) / 8) * 3, 0, 0);
-        Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
-        Camera.main.gameObject.GetComponent<CameraMovement>().Ybound = height * 18;
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-
-                Vector2 pos = startpos + new Vector2((x * 32) + x, (y * -32) - y);
-                GameObject block = Instantiate(tile, pos, Quaternion.identity) as GameObject;
-                allTiles.Add(block);
-                block.GetComponent<Block>().id = 5;
-                map[x, y] = 5;
-                block.GetComponent<Block>().xpos = x;
-                block.GetComponent<Block>().ypos = y;
-            }
-        }
+        CreateMap(width, height);
         // SaveToFile.save.SaveMap(map, width, height);
 
 
@@ -119,8 +102,43 @@ public class Grid : MonoBehaviour {
 
     }
 
+    public void CreateMap(int w, int h)
+    {
+        if (allTiles.Count > 0)
+        {
+            foreach (GameObject g in allTiles)
+            {
+                Destroy(g);
+            }
+            allTiles.Clear();
+        }
+
+        width = w;
+        height = h;
+        map = new int[width, height];
+        Camera.main.orthographicSize = height * 20;
+        Camera.main.gameObject.GetComponent<Transform>().position += new Vector3(((width * 32) / 8) * 3, 0, 0);
+        Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
+        Camera.main.gameObject.GetComponent<CameraMovement>().Ybound = height * 18;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+
+                Vector2 pos = startpos + new Vector2((x * 32) + x, (y * -32) - y);
+                GameObject block = Instantiate(tile, pos, Quaternion.identity) as GameObject;
+                allTiles.Add(block);
+                block.GetComponent<Block>().id = 5;
+                map[x, y] = 5;
+                block.GetComponent<Block>().xpos = x;
+                block.GetComponent<Block>().ypos = y;
+            }
+        }
+    }
+
         void SaveMap(int[,] map, int width, int height, bool saveAs)
     {
+        SpriteManager.instance.madeChanges = false;
         string[] mapinfo = new string[2];
         mapinfo[0] = width.ToString();
         mapinfo[1] = height.ToString();
