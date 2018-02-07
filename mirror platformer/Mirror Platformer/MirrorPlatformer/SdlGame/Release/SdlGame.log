@@ -1,0 +1,20 @@
+﻿  game.cpp
+c:\users\jules\desktop\sdl game\sdlgame\sdlgame\scripts\ecs\TransformComponent.h(34): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\sdl game\sdlgame\sdlgame\scripts\ecs\TileComponent.h(24): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\jules\desktop\sdl game\sdlgame\sdlgame\scripts\ecs\TileComponent.h(25): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\jules\desktop\sdl game\sdlgame\sdlgame\scripts\ecs\TileComponent.h(40): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\sdl game\sdlgame\sdlgame\scripts\ecs\TileComponent.h(41): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\sdl game\sdlgame\sdlgame\scripts\ecs\ECS.h(97): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Scripts\game.cpp(79): note: see reference to function template instantiation 'T &Entity::addComponent<TransformComponent,int,int,int,int,int>(int &&,int &&,int &&,int &&,int &&)' being compiled
+          with
+          [
+              T=TransformComponent
+          ]
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+     Creating library C:\Users\Jules\Desktop\SDL game\SdlGame\Release\SdlGame.lib and object C:\Users\Jules\Desktop\SDL game\SdlGame\Release\SdlGame.exp
+  Generating code
+  2 of 701 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  SdlGame.vcxproj -> C:\Users\Jules\Desktop\SDL game\SdlGame\Release\SdlGame.exe
