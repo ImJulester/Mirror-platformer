@@ -1,0 +1,15 @@
+﻿  game.cpp
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\ecs\transformcomponent.h(37): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\ecs\tilecomponent.h(21): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\ecs\tilecomponent.h(22): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\ecs\tilecomponent.h(37): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\ecs\tilecomponent.h(38): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\game.cpp(200): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\ecs\ecs.h(104): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  c:\users\jules\desktop\mirror platformer\mirrorplatformer\sdlgame\scripts\game.cpp(116): note: see reference to function template instantiation 'T &Entity::addComponent<TransformComponent,int,int,int,int,int>(int &&,int &&,int &&,int &&,int &&)' being compiled
+          with
+          [
+              T=TransformComponent
+          ]
+  SdlGame.vcxproj -> C:\Users\Jules\Desktop\Mirror Platformer\MirrorPlatformer\Debug\SdlGame.exe
+  SdlGame.vcxproj -> C:\Users\Jules\Desktop\Mirror Platformer\MirrorPlatformer\Debug\SdlGame.pdb (Partial PDB)
