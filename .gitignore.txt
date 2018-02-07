@@ -1,13 +1,9 @@
-
-# Created by https://www.gitignore.io/api/unity
-
-### Unity ###
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/Assets/AssetStoreTools*
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Assets/AssetStoreTools*
 
 # Visual Studio 2015 cache directory
 /.vs/
@@ -29,6 +25,7 @@ ExportedObj/
 
 # Unity3D generated meta files
 *.pidb.meta
+*.pdb.meta
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
@@ -36,6 +33,4 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-
-
-# End of https://www.gitignore.io/api/unity
+© 2018 GitHub, Inc.
