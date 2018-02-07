@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using UnityEditor;
+using SFB;
 
 public class Grid : MonoBehaviour {
-
+    bool quit;
     bool openMap;
 
     bool firstMap = true;
@@ -68,7 +68,8 @@ public class Grid : MonoBehaviour {
 
     void OpenMap()
     {
-        currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
+        currentSavePath = StandaloneFileBrowser.OpenFilePanel("Open map", "", "map", false)[0];
+        //currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
         //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
         string maptext;
         maptext = File.ReadAllText(currentSavePath);
@@ -192,13 +193,14 @@ public class Grid : MonoBehaviour {
 
         if (saveAs)
         {
-            currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
+            currentSavePath = StandaloneFileBrowser.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
+            //currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
         }
         Debug.Log(currentSavePathinfo + " before");
         if (currentSavePath == null || currentSavePathinfo == null)
         {
-            currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
+            currentSavePath = StandaloneFileBrowser.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
         }
         Debug.Log(currentSavePathinfo + " after");
@@ -214,6 +216,7 @@ public class Grid : MonoBehaviour {
 
     public void ButtonOpenMap()
     {
+        createNewMap.SetActive(false);
         openMap = true;
 
         if (firstMap)
@@ -256,10 +259,20 @@ public class Grid : MonoBehaviour {
     public void CancelNewMap()
     {
         saveChanges.SetActive(false);
+
+        if (quit)
+        {
+            Application.Quit();
+        }
     }
 
     public void DontSave()
     {
+        if (quit)
+        {
+            Application.Quit();
+        }
+
         CleanMap();
         saveChanges.SetActive(false);
         if (openMap)
@@ -279,6 +292,12 @@ public class Grid : MonoBehaviour {
     {
         SaveMap(map, width, height, false);
         saveChanges.SetActive(false);
+
+        if (quit)
+        {
+            Application.Quit();
+        }
+
         if (openMap)
         {
             OpenMap();
@@ -300,4 +319,14 @@ public class Grid : MonoBehaviour {
         SaveMap(map, width, height, true);
     }
     #endregion
-}
+
+
+    void OnApplicationQuit()
+    {
+        quit = true;
+        Application.CancelQuit();
+
+        saveChanges.SetActive(true);
+    }
+
+    }
