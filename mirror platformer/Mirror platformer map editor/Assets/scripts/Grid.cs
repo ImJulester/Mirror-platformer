@@ -46,7 +46,6 @@ public class Grid : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
     }
 
     #region mapMethods
@@ -262,7 +261,7 @@ public class Grid : MonoBehaviour {
 
         if (quit)
         {
-            Application.Quit();
+            quit = false;
         }
     }
 
@@ -295,7 +294,12 @@ public class Grid : MonoBehaviour {
 
         if (quit)
         {
+    #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+    #else
             Application.Quit();
+    #endif
+            //Application.Quit();
         }
 
         if (openMap)
@@ -323,10 +327,17 @@ public class Grid : MonoBehaviour {
 
     void OnApplicationQuit()
     {
-        quit = true;
-        Application.CancelQuit();
+        if (!quit)
+        {
+            quit = true;
+            if (SpriteManager.instance.madeChanges)
+            {
+                Application.CancelQuit();
 
-        saveChanges.SetActive(true);
+                saveChanges.SetActive(true);
+            }
+        }
+
     }
 
     }
