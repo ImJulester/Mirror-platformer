@@ -4,6 +4,7 @@
 #include "ECS\Components.h"
 #include "ECS\Vector2D.h"
 #include  "Collision.h"
+#include <fstream>
 
 Map* map;
 Manager manager;
@@ -29,6 +30,7 @@ bool yHit;
 bool levelTransition;
 
 std::vector<std::string> maplist;
+std::string finalmap = "assets/map/finalmap";
 int maplistIndex = 0;
 
 std::vector<ColliderComponent*> Game::colliders;
@@ -122,11 +124,19 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height, bo
 	controls.addComponent<SpriteComponent>("assets/controls.png");
 	controls.addGroup(groupTutorial);
 
-	maplist.push_back("assets/map/bigmap");
+	/*maplist.push_back("assets/map/bigmap");
 	maplist.push_back("assets/map/bigmap3");
 	maplist.push_back("assets/map/spikemap");
-	maplist.push_back("assets/map/bigmap2");
+	maplist.push_back("assets/map/bigmap2");*/
 
+
+	std::ifstream myfile("assets/maplist.txt");
+
+	std::copy(std::istream_iterator<std::string>(myfile),
+		std::istream_iterator < std::string>(),
+		std::back_inserter(maplist));
+
+	std::cout << maplist.size() << std::endl;
 	Map::LoadMap(maplist.at(maplistIndex));
 	maplistIndex++;
 
@@ -258,8 +268,18 @@ void Game::update()
 				colliders.clear();
 
 				//Load new map
-				Map::LoadMap(maplist.at(maplistIndex),false);
-				maplistIndex++;
+
+				if (maplistIndex <= maplist.size() - 1) 
+				{
+					Map::LoadMap(maplist.at(maplistIndex), false);
+					maplistIndex++;
+				}
+				else 
+				{
+					startpos = Vector2D(2, 2);
+					Map::LoadMap(finalmap, false);
+				}
+
 				//Set player start position
 				player.getComponent<TransformComponent>().position = startpos;
 				player.getComponent<KeyboardController>().mirrored = false;

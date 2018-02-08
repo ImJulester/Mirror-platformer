@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
 public class SpriteManager : MonoBehaviour {
     public static SpriteManager instance = null;
+    
+   
+    
+    public GameObject[] tileUIs;
 
     public int selectedID;
 
@@ -34,7 +37,19 @@ public class SpriteManager : MonoBehaviour {
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1))
+            {
+                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+                if (hit.collider != null)
+                {
+                    tileUIs[selectedID].SetActive(false);
+                    selectedID = hit.collider.GetComponent<Block>().id;
+                    tileUIs[selectedID].SetActive(true);
+                }
+            }
+
+                if (Input.GetMouseButton(0))
             {
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 
@@ -56,7 +71,9 @@ public class SpriteManager : MonoBehaviour {
 
     public void setSelectedTile(int i)
     {
+        tileUIs[selectedID].SetActive(false);
         selectedID = i;
+        tileUIs[selectedID].SetActive(true);
     }
 
 }

@@ -46,6 +46,10 @@ public class Grid : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Debug.Log(currentSavePath);
+        }
     }
 
     #region mapMethods
@@ -68,6 +72,7 @@ public class Grid : MonoBehaviour {
     void OpenMap()
     {
         currentSavePath = StandaloneFileBrowser.OpenFilePanel("Open map", "", "map", false)[0];
+        currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
         //currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
         //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
         string maptext;
@@ -205,13 +210,11 @@ public class Grid : MonoBehaviour {
             //currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
         }
-        Debug.Log(currentSavePathinfo + " before");
         if (currentSavePath == null || currentSavePathinfo == null)
         {
             currentSavePath = StandaloneFileBrowser.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
         }
-        Debug.Log(currentSavePathinfo + " after");
         if (currentSavePath != null)
         {
             File.WriteAllLines(currentSavePath, lines);

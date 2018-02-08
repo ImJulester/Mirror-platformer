@@ -1,0 +1,4 @@
+assets/map/bigmap
+assets/map/bigmap2
+assets/map/bigmap3
+assets/map/spikemap
