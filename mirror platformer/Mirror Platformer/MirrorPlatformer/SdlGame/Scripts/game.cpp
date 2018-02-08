@@ -124,6 +124,7 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height, bo
 
 	maplist.push_back("assets/map/bigmap");
 	maplist.push_back("assets/map/bigmap3");
+	maplist.push_back("assets/map/spikemap");
 	maplist.push_back("assets/map/bigmap2");
 
 	Map::LoadMap(maplist.at(maplistIndex));
@@ -258,7 +259,7 @@ void Game::update()
 
 				//Load new map
 				Map::LoadMap(maplist.at(maplistIndex),false);
-
+				maplistIndex++;
 				//Set player start position
 				player.getComponent<TransformComponent>().position = startpos;
 				player.getComponent<KeyboardController>().mirrored = false;

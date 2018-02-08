@@ -117,7 +117,7 @@ public class Grid : MonoBehaviour {
 
     }
 
-    public void CreateMap(int w, int h)
+    public void CreateMap(int w, int h,bool blank)
     {
         if (allTiles.Count > 0)
         {
@@ -139,8 +139,17 @@ public class Grid : MonoBehaviour {
                 Vector2 pos = startpos + new Vector2((x * 32) + x, (y * -32) - y);
                 GameObject block = Instantiate(tile, pos, Quaternion.identity) as GameObject;
                 allTiles.Add(block);
-                block.GetComponent<Block>().id = 5;
-                map[x, y] = 5;
+                if (!blank && y+1 > height/2)
+                {
+                    block.GetComponent<Block>().id = 1;
+                    map[x, y] = 1;
+                }
+                else
+                {
+                    block.GetComponent<Block>().id = 5;
+                    map[x, y] = 5;
+                }
+               
                 block.GetComponent<Block>().xpos = x;
                 block.GetComponent<Block>().ypos = y;
 
@@ -285,6 +294,11 @@ public class Grid : MonoBehaviour {
         }
 
 
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
     public void SaveChanges()
