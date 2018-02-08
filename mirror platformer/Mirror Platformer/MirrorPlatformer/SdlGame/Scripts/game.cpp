@@ -30,7 +30,7 @@ bool yHit;
 bool levelTransition;
 
 std::vector<std::string> maplist;
-std::string finalmap = "assets/map/finalmap";
+std::string finalmap = "assets/finalmap/finalmap";
 int maplistIndex = 0;
 
 std::vector<ColliderComponent*> Game::colliders;
