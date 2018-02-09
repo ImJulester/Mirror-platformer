@@ -17,7 +17,7 @@ public class Grid : MonoBehaviour {
     public int height;
 
     public int[,] map;
-
+    private Block[,] tiles;
     private string currentSavePath;
     private string currentSavePathinfo;
     private Vector2 startpos;
@@ -132,6 +132,9 @@ public class Grid : MonoBehaviour {
         width = w;
         height = h;
         map = new int[width, height];
+
+        SpriteManager.instance.ResetBlocks(width, height);
+        //tiles = new Block[width, height];
         Camera.main.orthographicSize = height * 20;
         //Camera.main.gameObject.GetComponent<Transform>().position += new Vector3(((width * 32) / 8) * 3, 0, 0);
         Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
@@ -162,6 +165,8 @@ public class Grid : MonoBehaviour {
                 {
                     Camera.main.gameObject.GetComponent<Transform>().position = new Vector3(block.GetComponent<Transform>().position.x, block.GetComponent<Transform>().position.y, -10);
                 }
+                SpriteManager.instance.SetBlocks(x, y, block.GetComponent<Block>());
+                //tiles[x, y] = block.GetComponent<Block>();
             }
         }
     }
