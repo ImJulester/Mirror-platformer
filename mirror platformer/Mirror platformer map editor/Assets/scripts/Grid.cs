@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using SFB;
-
+using UnityEngine.UI;
+using UnityEngine.Events;
 public class Grid : MonoBehaviour {
     bool quit;
     bool openMap;
@@ -22,8 +23,12 @@ public class Grid : MonoBehaviour {
     private string currentSavePathinfo;
     private Vector2 startpos;
 
+    public Button[] preview;
+
     public GameObject saveChanges;
     public GameObject createNewMap;
+    public GameObject recentUsedMaps;
+    public GameObject TilesPanel;
     // Use this for initialization
 
     void Awake()
@@ -39,13 +44,21 @@ public class Grid : MonoBehaviour {
     }
     void Start()
     {
-
+        TilesPanel.SetActive(false);
+        recentUsedMaps.SetActive(true);
         startpos = new Vector2(((-width * 32) / 8) * 3, (height * 32) / 2);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (RecentMaps.instance.doneLoading)
+        {
+            RecentMaps.instance.doneLoading = false;
+            MakePreview();
+        }
+
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             Debug.Log(currentSavePath);
@@ -69,10 +82,116 @@ public class Grid : MonoBehaviour {
         allTiles.Clear();
     }
 
+    int[,] OpenMapFile(string path)
+    {
+
+        int[,] ReturnMap = new int[0, 0];
+        currentSavePath = path;
+        currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
+        //currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
+        //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
+        string maptext;
+        maptext = File.ReadAllText(currentSavePath);
+        if (currentSavePath != null && maptext != null)
+        {
+       
+            string[] mapInfo = File.ReadAllLines(currentSavePath.Replace(".map", "i.map"));
+            int.TryParse(mapInfo[0], out width);
+            int.TryParse(mapInfo[1], out height);
+            ReturnMap = new int[width, height];
+
+            Camera.main.orthographicSize = height * 20;
+            Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
+            Camera.main.gameObject.GetComponent<CameraMovement>().Ybound = height * 18;
+
+
+
+            char[] separators = { ',', ';', ';', '\n' };
+            string[] values = maptext.Split(separators);
+            int count = 0;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int.TryParse(values[count], out ReturnMap [x, y]);
+                    count++;
+                }
+            }
+
+        }
+
+        return ReturnMap;
+    }
+
+    void OpenMap(string s)
+    {
+        firstMap = false;
+        TilesPanel.SetActive(true);
+        recentUsedMaps.SetActive(false);
+        currentSavePath = s;
+        currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
+        Debug.Log(currentSavePath);
+        //currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
+        //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
+        string maptext;
+        maptext = File.ReadAllText(currentSavePath);
+        if (currentSavePath != null && maptext != null)
+        {
+            CleanMap();
+
+            string[] mapInfo = File.ReadAllLines(currentSavePath.Replace(".map", "i.map"));
+            int.TryParse(mapInfo[0], out width);
+            int.TryParse(mapInfo[1], out height);
+            map = new int[width, height];
+
+            Camera.main.orthographicSize = height * 20;
+            Camera.main.gameObject.GetComponent<CameraMovement>().Xbound = width * 18;
+            Camera.main.gameObject.GetComponent<CameraMovement>().Ybound = height * 18;
+
+
+
+            char[] separators = { ',', ';', ';', '\n' };
+            string[] values = maptext.Split(separators);
+            int count = 0;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int.TryParse(values[count], out map[x, y]);
+                    Vector2 pos = startpos + new Vector2((x * 32) + x, (y * -32) - y);
+                    GameObject block = Instantiate(tile, pos, Quaternion.identity) as GameObject;
+                    allTiles.Add(block);
+                    block.GetComponent<Block>().id = map[x, y];
+                    block.GetComponent<Block>().xpos = x;
+                    block.GetComponent<Block>().ypos = y;
+
+                    count++;
+
+                    if (y == height / 2 && x == width / 2)
+                    {
+                        Camera.main.gameObject.GetComponent<Transform>().position = new Vector3(block.GetComponent<Transform>().position.x, block.GetComponent<Transform>().position.y, -10);
+                    }
+                }
+            }
+
+        }
+
+        if (!RecentMaps.instance.recentMaps.Contains(currentSavePath))
+        {
+            RecentMaps.instance.mapCount++;
+            RecentMaps.instance.recentMaps.Add(currentSavePath);
+        }
+    }
+
     void OpenMap()
     {
+        TilesPanel.SetActive(true);
+        recentUsedMaps.SetActive(false);
         currentSavePath = StandaloneFileBrowser.OpenFilePanel("Open map", "", "map", false)[0];
         currentSavePathinfo = currentSavePath.Replace(".map", "i.map");
+        Debug.Log(currentSavePath);
         //currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
         //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
         string maptext;
@@ -119,7 +238,16 @@ public class Grid : MonoBehaviour {
 
         }
 
-
+        if (!RecentMaps.instance.recentMaps.Contains(currentSavePath))
+        {
+            RecentMaps.instance.mapCount++;
+            RecentMaps.instance.recentMaps.Insert(0, currentSavePath);
+        }
+        else
+        {
+            RecentMaps.instance.recentMaps.Remove(currentSavePath);
+            RecentMaps.instance.recentMaps.Insert(0, currentSavePath);
+        }
     }
 
     public void CreateMap(int w, int h,bool blank)
@@ -174,6 +302,11 @@ public class Grid : MonoBehaviour {
     void SaveMap(int[,] map, int width, int height, bool saveAs)
     {
         SpriteManager.instance.madeChanges = false;
+
+        if (map == null)
+            return;
+
+
         string[] mapinfo = new string[2];
         mapinfo[0] = width.ToString();
         mapinfo[1] = height.ToString();
@@ -225,6 +358,17 @@ public class Grid : MonoBehaviour {
             File.WriteAllLines(currentSavePath, lines);
             File.WriteAllLines(currentSavePathinfo, mapinfo);
         }
+
+        if (!RecentMaps.instance.recentMaps.Contains(currentSavePath))
+        {
+            RecentMaps.instance.mapCount++;
+            RecentMaps.instance.recentMaps.Insert(0,currentSavePath);
+        }
+        else
+        {
+            RecentMaps.instance.recentMaps.Remove(currentSavePath);
+            RecentMaps.instance.recentMaps.Insert(0,currentSavePath);
+        }
     }
     #endregion
 
@@ -232,6 +376,7 @@ public class Grid : MonoBehaviour {
 
     public void ButtonOpenMap()
     {
+        recentUsedMaps.SetActive(false);
         createNewMap.SetActive(false);
         openMap = true;
 
@@ -250,12 +395,13 @@ public class Grid : MonoBehaviour {
         {
             saveChanges.SetActive(true);
         }
+        TilesPanel.SetActive(true);
     }
 
     public void NewMap()
     {
         openMap = false;
-
+        recentUsedMaps.SetActive(false);
         if (firstMap)
         {
             firstMap = false;
@@ -346,6 +492,77 @@ public class Grid : MonoBehaviour {
     }
     #endregion
 
+
+    #region ImageCreating
+    public Sprite MakeSprite(string s)
+    {
+        if (s != "")
+        {
+            int[,] currentMap = OpenMapFile(s);
+            Texture2D texture = new Texture2D(currentMap.GetLength(0), currentMap.GetLength(1));
+
+            Debug.Log(currentMap.GetLength(0));
+            Debug.Log(currentMap.GetLength(1));
+            for (int y = 0; y < currentMap.GetLength(1); y++)
+            {
+                for (int x = 0; x < currentMap.GetLength(0); x++)
+                {
+                    switch (currentMap[x, y])
+                    {
+                        case 1:
+                            texture.SetPixel(x, y, Color.black);
+                            break;
+                        case 5:
+                            texture.SetPixel(x, y, Color.white);
+                            break;
+                        case 8:
+                            texture.SetPixel(x, y, Color.red);
+                            break;
+                        default:
+                            texture.SetPixel(x, y, Color.white);
+                            break;
+                    }
+                }
+            }
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+        }
+
+        else
+        {
+            Debug.Log("failed to open image");
+            return null;
+        }
+    }
+
+
+    void MakePreview()
+    {
+        for (int i = 0; i < RecentMaps.instance.mapCount; i++)
+        {
+            if (i < 6)
+            {
+                if (i < preview.Length)
+                {
+                    preview[i].image.sprite = MakeSprite(RecentMaps.instance.recentMaps[i]);
+                    if (preview[i].image.sprite != null)
+                    {
+                        preview[i].gameObject.SetActive(true);
+                        preview[i].image.preserveAspect = true;
+                        Button tempButton = preview[i];
+                        string tempString = RecentMaps.instance.recentMaps[i];
+                        tempButton.onClick.AddListener(() => OpenMap(tempString));
+                    }
+                    else
+                    {
+                        Debug.Log("failed to make button bcuz no sprite");
+                    }
+                }
+            }
+        }
+    }
+    #endregion
 
     void OnApplicationQuit()
     {

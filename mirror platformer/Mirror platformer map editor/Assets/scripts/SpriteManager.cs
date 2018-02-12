@@ -101,7 +101,7 @@ public class SpriteManager : MonoBehaviour {
             int y = change[count].ypos;
 
            // Debug.Log(x + "                " + y);
-            if (y -1 >= 0 && y -1 <= gridHeight -1)
+            if (y -1 >= 0 && y +1 <= gridHeight -1)
             {
                 if (blocks[x, y -1].id == id)
                 {
