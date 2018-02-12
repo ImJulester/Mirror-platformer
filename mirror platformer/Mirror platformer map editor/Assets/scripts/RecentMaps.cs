@@ -7,8 +7,6 @@ public class RecentMaps : MonoBehaviour {
 
 
     public List<string> recentMaps;
-
-    public bool doneLoading;
     public int mapCount;
     private string playerPrefcount = "playerPrefCount";
     private string PlayerprefMap = "playerprefMap";
@@ -32,7 +30,6 @@ public class RecentMaps : MonoBehaviour {
             recentMaps.Add(PlayerPrefs.GetString(PlayerprefMap + i.ToString()));
         }
 
-        doneLoading = true;
     }
 
     public void SetPlayerPrefs()
