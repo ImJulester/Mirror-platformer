@@ -27,7 +27,11 @@ public class RecentMaps : MonoBehaviour {
 
         for (int i = 0; i < mapCount; i++)
         {
-            recentMaps.Add(PlayerPrefs.GetString(PlayerprefMap + i.ToString()));
+            if (PlayerPrefs.GetString(PlayerprefMap + i.ToString()) != "")
+            {
+                recentMaps.Add(PlayerPrefs.GetString(PlayerprefMap + i.ToString()));
+            }
+
         }
 
     }
@@ -44,18 +48,19 @@ public class RecentMaps : MonoBehaviour {
     void OnApplicationQuit()
     {
         Debug.Log("set player prefs");
+        mapCount = recentMaps.Count;
         PlayerPrefs.SetInt(playerPrefcount, mapCount);
 
         for (int i = 0; i < mapCount; i++)
         {
+            PlayerPrefs.DeleteKey(PlayerprefMap + i.ToString());
             PlayerPrefs.SetString(PlayerprefMap + i.ToString(),recentMaps[i]);
         }
     }
-    void Update () {
-        if (Input.GetKeyDown(KeyCode.Keypad9))
-        {
-            Debug.Log("Delete all keys");
-            PlayerPrefs.DeleteAll();
-        }
-	}
+    public void ResetRecentMaps()
+    {
+        mapCount = 0;
+        recentMaps = new List<string>();
+        PlayerPrefs.DeleteAll();
+    }
 }

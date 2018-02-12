@@ -20,7 +20,7 @@ void Map::LoadMap(std::string path)
 	int sizeY;
 	char c;
 	std::fstream mapdata;
-	mapdata.open(path + "i.map");
+	mapdata.open(path + ".mapinfo");
 
 	while (mapdata >> sizeX >> sizeY)
 	{
@@ -82,7 +82,7 @@ void Map::LoadMap(std::string path, bool reload)
 	int sizeY;
 	char c;
 	std::fstream mapdata;
-	mapdata.open(path + "i.map");
+	mapdata.open(path + ".mapinfo");
 
 	while (mapdata >> sizeX >> sizeY)
 	{

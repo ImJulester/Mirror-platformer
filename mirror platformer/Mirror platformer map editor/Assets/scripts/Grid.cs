@@ -19,7 +19,7 @@ public class Grid : MonoBehaviour {
 
     public int[,] map;
     private Block[,] tiles;
-    private string currentSavePath;
+    public string currentSavePath;
     private string currentSavePathinfo;
     private Vector2 startpos;
 
@@ -87,6 +87,10 @@ public class Grid : MonoBehaviour {
         //currentSavePath = EditorUtility.OpenFilePanel("Open Map", "", "map");
         //currentSavePath = EditorUtility.OpenFilePanel("save directory", "", "bigmap" + ".map", ".map");
         string maptext;
+        if (!File.Exists(currentSavePath) || !File.Exists(currentSavePathinfo))
+        {
+            return null;
+        }
         maptext = File.ReadAllText(currentSavePath);
         if (currentSavePath != null && maptext != null)
         {
@@ -354,12 +358,12 @@ public class Grid : MonoBehaviour {
             //currentSavePath = EditorUtility.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", ".mapinfo");
         }
-        if (currentSavePath == null || currentSavePathinfo == null)
+        if (currentSavePath == null || currentSavePath == "" || currentSavePathinfo == "" || currentSavePathinfo == null)
         {
             currentSavePath = StandaloneFileBrowser.SaveFilePanel("save directory", "", "bigmap" + ".map", "map");
             currentSavePathinfo = currentSavePath.Replace(".map", ".mapinfo");
         }
-        if (currentSavePath != null)
+        if (currentSavePath != null || currentSavePath != "")
         {
             File.WriteAllLines(currentSavePath, lines);
             File.WriteAllLines(currentSavePathinfo, mapinfo);
@@ -412,6 +416,7 @@ public class Grid : MonoBehaviour {
         {
             firstMap = false;
             createNewMap.SetActive(true);
+            currentSavePath = null;
             TilesPanel.SetActive(true);
             return;
         }
@@ -419,12 +424,14 @@ public class Grid : MonoBehaviour {
         {
             CleanMap();
             createNewMap.SetActive(true);
+            currentSavePath = null;
             TilesPanel.SetActive(true);
         }
         else
         {
             StartCoroutine(OpenAfterSave(createNewMap,TilesPanel));
             TilesPanel.SetActive(true);
+            currentSavePath = null;
         }
     }
 
@@ -560,6 +567,10 @@ public class Grid : MonoBehaviour {
         if (s != "")
         {
             int[,] currentMap = OpenMapFile(s);
+            if (currentMap == null)
+            {
+                return null;
+            }
             Texture2D texture = new Texture2D(currentMap.GetLength(0), currentMap.GetLength(1));
 
             Debug.Log(currentMap.GetLength(0));
@@ -606,6 +617,13 @@ public class Grid : MonoBehaviour {
             {
                 if (i < preview.Length)
                 {
+                    Sprite s = MakeSprite(RecentMaps.instance.recentMaps[i]);
+                    if (s == null)
+                    {
+                        Destroy(preview[i].gameObject);
+                        RecentMaps.instance.recentMaps.Remove(RecentMaps.instance.recentMaps[i]);
+                        continue;
+                    }
                     preview[i].image.sprite = MakeSprite(RecentMaps.instance.recentMaps[i]);
                     if (preview[i].image.sprite != null)
                     {
@@ -626,6 +644,7 @@ public class Grid : MonoBehaviour {
                 }
             }
         }
+        currentSavePath = null;
     }
     #endregion
 
