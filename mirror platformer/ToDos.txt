@@ -29,3 +29,8 @@ Brush = B
 Selecteren = S/A?
 Ereaser = E
 
+
+new extension for info files!!!!!!!
+
+name bij de recent files
+

@@ -61,6 +61,6 @@ public class RecentMaps : MonoBehaviour {
     {
         mapCount = 0;
         recentMaps = new List<string>();
-        PlayerPrefs.DeleteAll();
+        PlayerPrefs.DeleteAll();    
     }
 }
